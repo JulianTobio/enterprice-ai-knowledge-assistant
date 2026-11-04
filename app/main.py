@@ -1,13 +1,11 @@
 from fastapi import FastAPI
+from app.core.config import PROJECT_TITLE
+from app.api.api import router as api_router
+from app.dependencies import get_chat_service
 
 app = FastAPI(
-    title="Enterprise AI Knowledge Assistant",
+    title=PROJECT_TITLE,
     version="0.1.0",
 )
 
-@app.get("/health")
-async def health_check():
-    return {
-        "status": "ok",
-        "service": "Enterprise AI Knowledge Assistant",
-    }
+app.include_router(api_router)

@@ -20,3 +20,8 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Internal test files
+test-ai-models/
+data/
+chroma_db/

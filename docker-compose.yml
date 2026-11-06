@@ -1,0 +1,52 @@
+services:
+
+  backend-api:
+    build:
+      context: ./backend
+      target: api
+    container_name: app-backend-api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      SQL_STRING: ${SQL_STRING:?Set SQL_STRING in .env}
+      QUEUE_HOST: redis
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?Set OLLAMA_BASE_URL in .env}
+    ports:
+      - "${API_PORT:-8001}:8000"
+    volumes:
+      - ./data:/data
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: ./backend
+      target: worker
+    container_name: app-backend-worker
+    command: rq worker --url redis://redis:6379 default
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?Set OLLAMA_BASE_URL in .env}
+      CHROMA_DB_HOST: chromadb
+      CHROMA_DB_PORT: 8000
+    volumes:
+      - ./data:/data
+    depends_on:
+      - redis
+      - chromadb
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  chromadb:
+    image: chromadb/chroma
+    container_name: chromadb
+    ports:
+      - "${CHROMA_DB_PORT:-8002}:8000"
+    environment:
+      # Instructs Chroma where to write persistent files inside the container
+      - CHROMA_PERSIST_PATH=/data
+      - ANONYMIZED_TELEMETRY=False
+    volumes:
+      - ./chroma_data:/data
+    

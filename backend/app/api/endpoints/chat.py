@@ -6,7 +6,7 @@ from app.models.chat_response import ChatResponse
 
 router = APIRouter()
 
-@router.post("/chat", response_model=ChatResponse, status_code=status.HTTP_200_OK)
+@router.post("/", response_model=ChatResponse, status_code=status.HTTP_200_OK)
 async def chat_endpoint(payload: ChatRequest, service: ChatService = Depends(get_chat_service)):
 
     service_response = await service.chat(prompt=payload.message)

@@ -1,15 +1,18 @@
 import os
 from app.core.config import DOCUMENTS_PATH
 from fastapi import UploadFile, HTTPException, status
+from app.repositories.metadata_base import MetadataBase
+from app.models.file_metadata import FileMetadataCreate, FileMetadata, FileMetadataUpdate
 
 ALLOWED_EXTENSIONS = {".pdf"}
 MAX_FILE_SIZE = 5 * 1024 * 1024
 
 class FileService:
-    def __init__(self):
+    def __init__(self, metadata_repository: MetadataBase):
+        self.metadata = metadata_repository
         os.makedirs(DOCUMENTS_PATH, exist_ok=True)
     
-    async def save_file(self, upload_file: UploadFile) -> None:
+    async def save_file(self, upload_file: UploadFile) -> FileMetadata:
         """Save a file to the specified path."""
 
         # 1. Validate extension
@@ -39,5 +42,23 @@ class FileService:
             if os.path.exists(file_path):
                 os.remove(file_path)  # Cleanup partial files on failure
             raise e
+
+        # 4. Creatre metadata
+        file_create_metadata = FileMetadataCreate(
+            file_name=upload_file.filename,
+            path=file_path
+        )
+
+        file_metadata = self.metadata.create_metadata(file_create_metadata)
         
-        return
+        return file_metadata
+
+    async def list_files(self) -> list[FileMetadata]:
+        """List all files metadata"""
+
+        return self.metadata.get_all_files()
+
+    async def update_file_metadata(self,item_id: int, updated_metadata: FileMetadataUpdate) -> FileMetadata:
+        """Updates file metadata"""
+
+        return self.metadata.update_metadata(item_id, updated_metadata)

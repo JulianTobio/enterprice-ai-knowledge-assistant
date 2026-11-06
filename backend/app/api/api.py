@@ -6,5 +6,5 @@ from app.api.endpoints import files
 
 router = APIRouter()
 router.include_router(health.router, tags=["health"])
-router.include_router(chat.router, tags=["chat"], prefix=API_PREFIX)
-router.include_router(files.router, tags=["files"], prefix=API_PREFIX)
+router.include_router(chat.router, tags=["chat"], prefix=f"{API_PREFIX}/chat")
+router.include_router(files.router, tags=["files"], prefix=f"{API_PREFIX}/files")

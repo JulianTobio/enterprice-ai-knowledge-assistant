@@ -5,9 +5,7 @@ __pycache__/
 
 # Virtual environments
 .venv/
-venv/
-ENV/
-env/
+backend/.venv/
 
 # Environment variables and secrets
 .env
@@ -22,6 +20,6 @@ env/
 htmlcov/
 
 # Internal test files
-test-ai-models/
+backend/test-ai-models/
 data/
-chroma_db/
+chroma_data/

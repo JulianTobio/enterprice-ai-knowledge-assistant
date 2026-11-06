@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from app.core.config import PROJECT_TITLE
 from app.api.api import router as api_router
-from app.dependencies import get_chat_service
+from app.db.database import engine
+import app.models.db_models as models
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=PROJECT_TITLE,

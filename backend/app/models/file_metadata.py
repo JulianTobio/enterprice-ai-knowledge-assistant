@@ -6,12 +6,14 @@ class BaseFileMetadata(BaseModel):
     path: str
 
 class FileMetadataCreate(BaseFileMetadata):
+    status: str = "UPLOADED"
     pass
 
 class FileMetadataUpdate(BaseFileMetadata):
     file_name: Optional[str] = None
     path: Optional[str] = None
     status: Optional[str] = None
+    error: Optional[str] = None
     processed_at: AwareDatetime | None = None
 
 class FileMetadata(BaseFileMetadata):

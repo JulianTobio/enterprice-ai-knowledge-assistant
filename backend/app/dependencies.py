@@ -1,7 +1,8 @@
 from fastapi import Depends
-from app.core.config import LLM_MODEL_NAME
-from app.repositories.llm_base import BaseLLMRepository
-from app.repositories.ollama_repo import OllamaRepository
+from sqlalchemy.orm import Session
+from rq import Queue
+from chromadb import Collection
+
 from app.services.chat_service import ChatService
 from app.services.file_service import FileService
 from app.services.queue_service import QueueService
@@ -9,22 +10,20 @@ from app.repositories.metadata_base import MetadataBase
 from app.repositories.metadata_repo import MetadataRepository
 from app.db.database import get_db
 from app.db.redis import get_queue
-from sqlalchemy.orm import Session
-from rq import Queue
 
-def get_llm_repository() -> BaseLLMRepository:
-    """
-    Dependency to get the LLM repository instance.
-    This can be extended to support different LLM backends in the future.
-    """
-    return OllamaRepository(model=LLM_MODEL_NAME)
+from shared.repositories.llm_base import BaseLLMRepository
+from shared.dependencies import get_llm_repository
+from shared.db.chromadb import get_collection
 
-def get_chat_service(llm_repo: BaseLLMRepository = Depends(get_llm_repository)) -> ChatService:
+
+def get_chat_service(
+        llm_repo: BaseLLMRepository = Depends(get_llm_repository),
+        collection: Collection = Depends(get_collection)) -> ChatService:
     """
     Dependency to get the ChatService instance.
-    It depends on the LLM repository.
+    It depends on the LLM repository and Chroma Collection.
     """
-    return ChatService(llm_repository=llm_repo)
+    return ChatService(llm_repository=llm_repo, chroma_collection=collection)
 
 def get_metadata_repository(session: Session = Depends(get_db)) -> MetadataBase:
     """

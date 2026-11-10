@@ -12,7 +12,7 @@ COPY . .
 FROM base AS api
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir fastapi[standard] python-multipart ollama sqlalchemy psycopg2-binary redis rq
+    pip install --no-cache-dir fastapi[standard] python-multipart ollama sqlalchemy psycopg2-binary redis rq chromadb
 
 EXPOSE 8000
 

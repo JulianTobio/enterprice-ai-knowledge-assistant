@@ -11,13 +11,12 @@ class MetadataRepository(MetadataBase):
 
     def create_metadata(self, metadata: FileMetadataCreate) -> FileMetadata:
         
-        new_metadata = FileMetadata(**metadata.model_dump())
-        new_metadata.status = "UPLOADED"
-        self.db.add(new_metadata)
+        db_metadata = models.FileMetadata(**metadata.model_dump())
+        self.db.add(db_metadata)
         self.db.commit()
-        self.db.refresh(new_metadata)
+        self.db.refresh(db_metadata)
 
-        return new_metadata
+        return db_metadata
     
     def get_file_metadata(self, id: int) -> FileMetadata:
         

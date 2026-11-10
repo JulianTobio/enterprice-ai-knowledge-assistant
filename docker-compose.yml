@@ -4,12 +4,14 @@ services:
     build:
       context: ./backend
       target: api
-    container_name: app-backend-api
+    container_name: backend-api
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     environment:
       SQL_STRING: ${SQL_STRING:?Set SQL_STRING in .env}
       QUEUE_HOST: redis
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?Set OLLAMA_BASE_URL in .env}
+      CHROMA_DB_HOST: chromadb
+      CHROMA_DB_PORT: 8000
     ports:
       - "${API_PORT:-8001}:8000"
     volumes:
@@ -21,12 +23,13 @@ services:
     build:
       context: ./backend
       target: worker
-    container_name: app-backend-worker
+    container_name: backend-worker
     command: rq worker --url redis://redis:6379 default
     environment:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?Set OLLAMA_BASE_URL in .env}
       CHROMA_DB_HOST: chromadb
       CHROMA_DB_PORT: 8000
+      METADATA_API_URL: http://backend-api:8000/
     volumes:
       - ./data:/data
     depends_on:

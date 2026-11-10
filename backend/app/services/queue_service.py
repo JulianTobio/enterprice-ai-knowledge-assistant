@@ -6,5 +6,5 @@ class QueueService:
         self.queue = queue
 
     def queue_file_embedding(self, metadata: FileMetadata) -> str:
-        job =self.queue.enqueue("shared.tasks.file_embedding", metadata)
+        job =self.queue.enqueue("shared.tasks.file_embedding", file_path=metadata.path, file_name=metadata.file_name, file_id=metadata.id)
         return job.id
